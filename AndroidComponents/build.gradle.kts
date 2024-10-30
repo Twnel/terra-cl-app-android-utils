@@ -27,6 +27,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            isShrinkResources = false
         }
     }
     compileOptions {
@@ -85,9 +86,9 @@ afterEvaluate{
         publications {
             create<MavenPublication>("release") {
                 from(components["release"])
-                groupId = "com.twnel"
+                groupId = "com.github.Twnel"
                 artifactId = "android-components"
-                version = "1.0"
+                version = "1.0.5"
             }
         }
     }
