@@ -57,7 +57,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
@@ -222,8 +221,7 @@ fun AudioPlayer(
             }
             AnimatedVisibility(
                 visible = showTranscript,
-                enter = fadeIn() + expandVertically(
-                    expandFrom = Alignment.Top,
+                enter = fadeIn() + expandVertically(expandFrom = Alignment.Top,
                     initialHeight = { 0 }),
                 exit = fadeOut() + shrinkVertically()
 
@@ -351,8 +349,7 @@ fun AudioVelocity(
                 )
             }
         } else if (setShowTranscript != null) {
-            Icon(
-                imageVector = if (showTranscript) Icons.Default.Description else Icons.Outlined.Description,
+            Icon(imageVector = if (showTranscript) Icons.Default.Description else Icons.Outlined.Description,
                 contentDescription = transcriptTitle,
                 tint = MaterialTheme.colorScheme.secondary,
                 modifier = Modifier
@@ -360,8 +357,7 @@ fun AudioVelocity(
                     .align(Alignment.Center)
                     .clickable {
                         setShowTranscript(!showTranscript)
-                    }
-            )
+                    })
         }
     }
 }
@@ -369,13 +365,11 @@ fun AudioVelocity(
 
 @Composable
 fun Transcript(
-    transcript: String,
-    transcriptTitle: String
+    transcript: String, transcriptTitle: String
 ) {
     Column(Modifier.padding(horizontal = 10.dp, vertical = 8.dp)) {
         Text(
-            text = transcriptTitle,
-            style = MaterialTheme.typography.titleSmall
+            text = transcriptTitle, style = MaterialTheme.typography.titleSmall
         )
         if (transcript.isNotEmpty()) {
             Text(

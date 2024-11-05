@@ -50,7 +50,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
-import com.twnel.android.ui.components.utils.PermissionContent
+import com.twnel.android_components.utils.PermissionContent
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalPermissionsApi::class)
