@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.camera.x.view)
     implementation(libs.camera.x.video)
     implementation(libs.material.icons.extended)
+    implementation(libs.androidx.media3.ui)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
