@@ -530,7 +530,8 @@ fun PickImageFromGallery(stringPickImage: String) {
 private fun takePhoto(
     controller: LifecycleCameraController, onPhotoTaken: (Bitmap) -> Unit, context: Context
 ) {
-    controller.takePicture(ContextCompat.getMainExecutor(context),
+    controller.takePicture(
+        ContextCompat.getMainExecutor(context),
         object : ImageCapture.OnImageCapturedCallback() {
             override fun onCaptureSuccess(image: ImageProxy) {
                 super.onCaptureSuccess(image)
@@ -815,7 +816,3 @@ private fun startVideoRecording(
 private fun stopVideoRecording(recording: Recording) {
     recording.stop()
 }
-
-
-
-

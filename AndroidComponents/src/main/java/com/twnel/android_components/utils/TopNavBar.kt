@@ -82,4 +82,3 @@ fun ShowMessageConnecting(mqttConnected: Boolean, stringConnecting: String) {
         )
     }
 }
-

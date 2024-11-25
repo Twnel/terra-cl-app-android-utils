@@ -207,8 +207,7 @@ fun VideoPreview(
                         } else {
                             videoManager.pausePlayback()
                         }
-                    },
-                    modifier = Modifier
+                    }, modifier = Modifier
                         .align(Alignment.Center)
                         .size(40.dp)
                 ) {
