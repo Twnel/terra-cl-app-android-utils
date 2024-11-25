@@ -25,6 +25,7 @@ accompanistPermissions = "0.36.0"
 cameraX = "1.4.0"
 sonarqube = "5.1.0.4882"
 composeMaterialIcons = "1.7.5"
+media3Ui = "1.4.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -63,6 +64,7 @@ camera-x-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", ver
 camera-x-view = { group = "androidx.camera", name = "camera-view", version.ref = "cameraX" }
 camera-x-video = { group = "androidx.camera", name = "camera-video", version.ref = "cameraX" }
 material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "composeMaterialIcons" }
+androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3Ui" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
