@@ -20,8 +20,8 @@ abstract class AbstractMessage {
     var sendHour: Long = 0
     var deliveredHour: Long = 0
     var imageType: String = ""
-    var audioType: String = ""
-    var audioDuration: Int = 0
+    var mediaType: String = ""
+    var mediaDuration: Int = 0
     var waveformData: String = ""
     var isSending: Boolean = false
     var showInfo: Boolean = false
