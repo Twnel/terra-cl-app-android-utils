@@ -166,7 +166,7 @@ fun keyboardAsState(): State<Int> {
     return rememberUpdatedState(imeHeight)
 }
 
-private fun getTextFormat(countryCode: String, phone: String): String {
+fun getTextFormat(countryCode: String, phone: String): String {
     try {
         val phoneUtil = PhoneNumberUtil.getInstance()
         val phoneNumber = phoneUtil.parse("$countryCode$phone", "")
@@ -176,7 +176,7 @@ private fun getTextFormat(countryCode: String, phone: String): String {
     }
 }
 
-private fun getExampleNumber(countryCode: String): String {
+fun getExampleNumber(countryCode: String): String {
     try {
         val phoneUtil = PhoneNumberUtil.getInstance()
         val exampleNumber = phoneUtil.getExampleNumber(countryCode)
@@ -186,7 +186,7 @@ private fun getExampleNumber(countryCode: String): String {
     }
 }
 
-private val countryOptions = arrayOf(
+val countryOptions = arrayOf(
     Triple("US", "+1", "\uD83C\uDDFA\uD83C\uDDF8"),
     Triple("AR", "+54", "\uD83C\uDDE6\uD83C\uDDF7"),
     Triple("BR", "+55", "\uD83C\uDDE7\uD83C\uDDF7"),
@@ -196,7 +196,7 @@ private val countryOptions = arrayOf(
     Triple("IN", "+91", "\uD83C\uDDEE\uD83C\uDDF3"),
 )
 
-private val countryNames = hashMapOf(
+val countryNames = hashMapOf(
     "US" to "United States",
     "AR" to "Argentina",
     "BR" to "Brazil",
