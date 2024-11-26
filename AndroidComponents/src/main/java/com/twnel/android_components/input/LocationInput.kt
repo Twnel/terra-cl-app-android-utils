@@ -66,7 +66,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
-import com.twnel.android.ui.components.utils.PermissionContent
+import com.twnel.android_components.utils.PermissionContent
 
 
 @Composable

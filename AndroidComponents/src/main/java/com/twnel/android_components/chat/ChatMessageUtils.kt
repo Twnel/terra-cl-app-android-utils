@@ -164,7 +164,7 @@ fun ResendButton(
 
 
 @Composable
-private fun ImageInfo(
+fun ImageInfo(
     showInfo: Boolean = true, image: Any, color: Color, imageType: String, stringCompanyLogo: String
 ) {
     if (showInfo) {
@@ -207,7 +207,7 @@ private fun ImageInfo(
 }
 
 @Composable
-private fun ImageContentMessage(
+fun ImageContentMessage(
     message: AbstractMessage,
     setImage: (AbstractMessage) -> Unit,
     onImageClick: (String) -> Unit,
@@ -317,7 +317,7 @@ fun OptionButton(
 }
 
 @Composable
-private fun VideoContentMessage(
+fun VideoContentMessage(
     message: AbstractMessage,
     setVideo: (AbstractMessage) -> Unit,
     onVideoClick: (String) -> Unit,
@@ -399,67 +399,130 @@ private fun VideoContentMessage(
 fun PhotoCameraScreen(
     closeCamera: () -> Unit = {},
     onTakePhoto: (Bitmap) -> Unit,
+    captureInstructionString: String,
     stringCloseCamera: String,
-    stringSwitchCamera: String,
-    stringTakePhoto: String
+    stringSwitchCamera: String
 ) {
-    val permissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
-
     val context = LocalContext.current
-    val cameraController = remember {
-        LifecycleCameraController(context).apply {
-            setEnabledUseCases(
-                CameraController.IMAGE_CAPTURE,
-            )
-        }
-    }
     val lifecycle = LocalLifecycleOwner.current
+    val coroutineScope = rememberCoroutineScope()
+    var isTapped by remember { mutableStateOf(false) }
 
-    BackHandler {
-        closeCamera()
-    }
+
+    val recordButtonColor by animateColorAsState(
+        targetValue = if (isTapped) Color.White.copy(alpha = 0.8f) else Color.Transparent,
+        animationSpec = tween(durationMillis = 300),
+        label = ""
+    )
+
+    val permissionsState = rememberMultiplePermissionsState(
+        permissions = listOf(Manifest.permission.CAMERA)
+    )
+
+    val allPermissionsGranted = permissionsState.allPermissionsGranted
 
     LaunchedEffect(Unit) {
-        permissionState.launchPermissionRequest()
+        if (!allPermissionsGranted) {
+            permissionsState.launchMultiplePermissionRequest()
+        }
     }
 
-    if (permissionState.status.isGranted) {
-        Box {
-            CamaraComposable(cameraController, lifecycle)
-            IconButton(onClick = { closeCamera() }) {
-                Icon(
-                    imageVector = Icons.Default.Cancel, contentDescription = stringCloseCamera
-                )
+    if (allPermissionsGranted) {
+        val cameraController = remember {
+            LifecycleCameraController(context).apply {
+                setEnabledUseCases(CameraController.IMAGE_CAPTURE)
             }
+        }
+
+        BackHandler {
+            closeCamera()
+        }
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            CamaraComposable(cameraController, lifecycle)
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
                     .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceAround
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                IconButton(onClick = {
-                    cameraController.cameraSelector =
-                        if (cameraController.cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) CameraSelector.DEFAULT_FRONT_CAMERA
-                        else CameraSelector.DEFAULT_BACK_CAMERA
-                }) {
+                IconButton(onClick = closeCamera, modifier = Modifier.size(32.dp)) {
                     Icon(
-                        imageVector = Icons.Default.FlipCameraAndroid,
-                        contentDescription = stringSwitchCamera
-                    )
-                }
-                IconButton(onClick = {
-                    takePhoto(cameraController, onTakePhoto, context)
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.PhotoCamera,
-                        contentDescription = stringTakePhoto
+                        imageVector = Icons.Default.Close,
+                        contentDescription = stringCloseCamera,
+                        tint = Color.White
                     )
                 }
             }
-        }
 
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 32.dp),
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .size(70.dp)
+                            .border(
+                                width = 4.dp, color = Color.White, shape = CircleShape
+                            )
+                            .padding(6.dp)
+                    ) {
+                        Box(modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                color = recordButtonColor, shape = CircleShape
+                            )
+                            .pointerInput(Unit) {
+                                detectTapGestures(onPress = {
+                                    isTapped = true
+                                    coroutineScope.launch {
+                                        delay(150)
+                                        isTapped = false
+                                    }
+
+                                    try {
+                                        awaitRelease()
+                                    } finally {
+                                        takePhoto(cameraController, onTakePhoto, context)
+                                    }
+                                })
+                            })
+                    }
+                    IconButton(
+                        onClick = {
+                            cameraController.cameraSelector =
+                                if (cameraController.cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) CameraSelector.DEFAULT_FRONT_CAMERA
+                                else CameraSelector.DEFAULT_BACK_CAMERA
+                        }, modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .padding(end = 16.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.FlipCameraAndroid,
+                            contentDescription = stringSwitchCamera,
+                            tint = Color.White,
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+                }
+
+                Text(
+                    text = captureInstructionString,
+                    color = Color.White,
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+            }
+        }
     }
 }
 
@@ -553,7 +616,9 @@ fun VideoAndPhotoCameraScreen(
     closeCamera: () -> Unit = {},
     onTakePhoto: (Bitmap) -> Unit,
     onVideoRecorded: (Uri) -> Unit,
-    captureInstructionString: String
+    captureInstructionString: String,
+    stringCloseCamera: String,
+    stringSwitchCamera: String
 ) {
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current
@@ -672,7 +737,7 @@ fun VideoAndPhotoCameraScreen(
                     IconButton(onClick = closeCamera, modifier = Modifier.size(32.dp)) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Close",
+                            contentDescription = stringCloseCamera,
                             tint = Color.White
                         )
                     }
@@ -758,7 +823,7 @@ fun VideoAndPhotoCameraScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.FlipCameraAndroid,
-                                contentDescription = "Switch Camera",
+                                contentDescription = stringSwitchCamera,
                                 tint = Color.White,
                                 modifier = Modifier.size(32.dp)
                             )
