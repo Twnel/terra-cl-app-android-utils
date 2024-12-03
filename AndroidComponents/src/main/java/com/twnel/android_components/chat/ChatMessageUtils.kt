@@ -649,8 +649,7 @@ fun VideoAndPhotoCameraScreen(
 
     val permissions = remember {
         mutableListOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.RECORD_AUDIO
+            Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO
         ).apply {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 add(Manifest.permission.READ_MEDIA_VIDEO)
