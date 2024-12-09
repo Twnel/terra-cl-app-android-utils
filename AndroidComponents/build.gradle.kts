@@ -8,11 +8,11 @@ plugins {
 
 android {
     namespace = "com.twnel.android_components"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 26
-        version = "1.0.9"
+        version = "1.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
         vectorDrawables {
@@ -89,7 +89,7 @@ afterEvaluate{
                 from(components["release"])
                 groupId = "com.github.Twnel"
                 artifactId = "android-components"
-                version = "1.0.9"
+                version = "1.1.0"
             }
         }
     }
