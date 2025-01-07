@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         minSdk = 26
-        version = "1.1.3"
+        version = "1.1.4"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
         vectorDrawables {
@@ -28,6 +28,9 @@ android {
                 "proguard-rules.pro"
             )
             isShrinkResources = false
+        }
+        debug {
+            signingConfig = null
         }
     }
     compileOptions {
@@ -89,7 +92,7 @@ afterEvaluate{
                 from(components["release"])
                 groupId = "com.github.Twnel"
                 artifactId = "android-components"
-                version = "1.1.3"
+                version = "1.1.4"
             }
         }
     }
