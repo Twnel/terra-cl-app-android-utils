@@ -1,6 +1,7 @@
 package com.twnel.android_components.chat
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
@@ -339,6 +340,7 @@ fun CloseIcon(isRecording: Boolean, closeCamera: () -> Unit, stringCloseCamera: 
     }
 }
 
+@SuppressLint("MissingPermission")
 private fun startVideoRecording(
     controller: LifecycleCameraController,
     onVideoRecorded: (Uri) -> Unit,
