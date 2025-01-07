@@ -131,6 +131,27 @@ fun AudioPlayer(
     val backgroundColor = MaterialTheme.colorScheme.background
     val blendedColor = blendColors(backgroundColor, secondaryContainerColor, 0.5f)
 
+    val onProgressChange = { newProgress: Float ->
+        progress = newProgress
+        if (isPlaying || isPaused) {
+            audioManager.seekTo((newProgress * duration).toLong())
+        } else {
+            audioManager.playAudio(audioPath, messageId) {
+                progress = 0f
+            }
+            audioManager.seekTo((newProgress * duration).toLong())
+        }
+    }
+
+    val checkScroll = { if (lastItem) scroll() }
+
+    val showText = if (error != null) "Error" else if (isPlaying || isPaused) {
+            formatRecordingDuration(currentTime.toInt() / 1000)
+        } else {
+            formatRecordingDuration(audioDuration)
+        }
+
+
     Row(
         Modifier
             .fillMaxSize()
@@ -178,17 +199,7 @@ fun AudioPlayer(
                     WaveformVisualizer(
                         waveformData = waveform,
                         progress = progress,
-                        onProgressChange = { newProgress ->
-                            progress = newProgress
-                            if (isPlaying || isPaused) {
-                                audioManager.seekTo((newProgress * duration).toLong())
-                            } else {
-                                audioManager.playAudio(audioPath, messageId) {
-                                    progress = 0f
-                                }
-                                audioManager.seekTo((newProgress * duration).toLong())
-                            }
-                        },
+                        onProgressChange = onProgressChange,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(30.dp)
@@ -197,11 +208,7 @@ fun AudioPlayer(
                 }
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = if (error != null) "Error" else if (isPlaying || isPaused) {
-                        formatRecordingDuration(currentTime.toInt() / 1000)
-                    } else {
-                        formatRecordingDuration(audioDuration)
-                    },
+                    text = showText,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -221,7 +228,8 @@ fun AudioPlayer(
             }
             AnimatedVisibility(
                 visible = showTranscript,
-                enter = fadeIn() + expandVertically(expandFrom = Alignment.Top,
+                enter = fadeIn() + expandVertically(
+                    expandFrom = Alignment.Top,
                     initialHeight = { 0 }),
                 exit = fadeOut() + shrinkVertically()
 
@@ -244,7 +252,7 @@ fun AudioPlayer(
                         Transcript(transcript = transcript, transcriptTitle = transcriptTitle)
                     }
                 }
-                if (lastItem) scroll()
+                checkScroll()
             }
         }
         error?.let {

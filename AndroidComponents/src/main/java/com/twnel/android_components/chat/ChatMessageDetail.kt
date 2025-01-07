@@ -92,7 +92,6 @@ fun ChatMessageDetail(
                             fontSize = 12.sp,
                         )
                     }
-
                 }
             }
         }

@@ -46,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -72,6 +73,37 @@ fun VideoPreview(
     var playbackSpeed by remember { mutableFloatStateOf(videoManager.playbackSpeed) }
     var currentPosition by remember { mutableLongStateOf(0L) }
     var isFinished by remember { mutableStateOf(false) }
+    val onReplay = {
+        isPlaying = true
+        if (isFinished) {
+            isFinished = false
+            videoManager.seekTo(0)
+        }
+        videoManager.resumePlayback()
+    }
+
+    val onPlay = {
+        isPlaying = !isPlaying
+        if (isPlaying) {
+            videoManager.resumePlayback()
+        } else {
+            videoManager.pausePlayback()
+        }
+    }
+
+    val recordingIcon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow
+    val recordingText = if (isPlaying) "Pause" else "Play"
+    val replayIcon = if (isFinished) Icons.Default.Replay else Icons.Default.PlayArrow
+
+    val onChangeSpeed = {
+        val newSpeed = when (playbackSpeed) {
+            1.0f -> 1.5f
+            1.5f -> 2.0f
+            else -> 1.0f
+        }
+        videoManager.playbackSpeed = newSpeed
+        playbackSpeed = newSpeed
+    }
 
     BackHandler {
         videoManager.stopPlayback()
@@ -140,28 +172,18 @@ fun VideoPreview(
                             )
                     )
                 }
-
-                if (!isPlaying || isFinished) {
-                    Icon(
-                        imageVector = if (isFinished) Icons.Default.Replay else Icons.Default.PlayArrow,
-                        contentDescription = "Replay/Play",
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .size(64.dp)
-                            .background(Color.Black.copy(alpha = 0.5f), CircleShape)
-                            .padding(8.dp)
-                            .clickable {
-                                isPlaying = true
-                                if (isFinished) {
-                                    isFinished = false
-                                    videoManager.seekTo(0)
-                                }
-                                videoManager.resumePlayback()
-                            },
-                        tint = Color.White
-                    )
-                }
-
+                val replayIconModifier = Modifier
+                    .align(Alignment.Center)
+                    .size(64.dp)
+                    .background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                    .padding(8.dp)
+                    .clickable { onReplay() }
+                ReplayIcon(
+                    isPlaying = isPlaying,
+                    isFinished = isFinished,
+                    replayIcon = replayIcon,
+                    modifier = replayIconModifier
+                )
             }
         }
 
@@ -200,35 +222,20 @@ fun VideoPreview(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 IconButton(
-                    onClick = {
-                        isPlaying = !isPlaying
-                        if (isPlaying) {
-                            videoManager.resumePlayback()
-                        } else {
-                            videoManager.pausePlayback()
-                        }
-                    }, modifier = Modifier
+                    onClick = { onPlay() }, modifier = Modifier
                         .align(Alignment.Center)
                         .size(40.dp)
                 ) {
                     Icon(
-                        imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                        contentDescription = if (isPlaying) "Pause" else "Play",
+                        imageVector = recordingIcon,
+                        contentDescription = recordingText,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(40.dp)
                     )
                 }
 
                 Button(
-                    onClick = {
-                        val newSpeed = when (playbackSpeed) {
-                            1.0f -> 1.5f
-                            1.5f -> 2.0f
-                            else -> 1.0f
-                        }
-                        videoManager.playbackSpeed = newSpeed
-                        playbackSpeed = newSpeed
-                    },
+                    onClick = { onChangeSpeed() },
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .padding(end = 16.dp)
@@ -271,26 +278,52 @@ fun VideoPreview(
                     tint = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
+            SendIconButton(
+                sendButton = sendButton,
+                videoManager = videoManager,
+                onSend = onSend,
+                sendText = sendText
+            )
+        }
+    }
+}
 
-            if (sendButton) {
-                IconButton(
-                    onClick = {
-                        videoManager.stopPlayback()
-                        onSend()
-                    }, modifier = Modifier
-                        .background(
-                            MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f),
-                            CircleShape
-                        )
-                        .size(48.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.Send,
-                        contentDescription = sendText,
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
-                }
-            }
+@Composable
+fun ReplayIcon(
+    isPlaying: Boolean,
+    isFinished: Boolean,
+    replayIcon: ImageVector,
+    modifier: Modifier
+){
+    if (!isPlaying || isFinished) {
+        Icon(
+            imageVector = replayIcon,
+            contentDescription = "Replay/Play",
+            modifier = modifier,
+            tint = Color.White
+        )
+    }
+}
+
+@Composable
+fun SendIconButton(sendButton: Boolean,videoManager: VideoManager, onSend: () -> Unit, sendText: String) {
+    if (sendButton) {
+        IconButton(
+            onClick = {
+                videoManager.stopPlayback()
+                onSend()
+            }, modifier = Modifier
+                .background(
+                    MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f),
+                    CircleShape
+                )
+                .size(48.dp)
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.Send,
+                contentDescription = sendText,
+                tint = MaterialTheme.colorScheme.onSecondaryContainer
+            )
         }
     }
 }

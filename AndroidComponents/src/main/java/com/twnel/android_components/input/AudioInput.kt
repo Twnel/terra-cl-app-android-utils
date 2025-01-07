@@ -98,13 +98,26 @@ fun RecordButton(
         }, label = ""
     )
 
+    val scaleContent = if (isRecording) scale else 1f
+
+    val onDragEndAction = {
+        isRecording = false
+        if (dragOffset < cancelThreshold) {
+            onCancelRecording()
+        } else {
+            onStopRecording()
+        }
+        dragOffset = 0f
+        onDragOffsetChange(0f)
+    }
+
     Box(contentAlignment = Alignment.Center,
         modifier = Modifier
             .size(buttonSize)
             .offset { IntOffset(dragOffset.roundToInt(), 0) }
             .graphicsLayer {
-                scaleX = if (isRecording) scale else 1f
-                scaleY = if (isRecording) scale else 1f
+                scaleX = scaleContent
+                scaleY = scaleContent
             }
             .clip(CircleShape)
             .background(backgroundColor)
@@ -130,26 +143,21 @@ fun RecordButton(
                 })
             }
             .pointerInput(Unit) {
-                detectDragGestures(onDragStart = {}, onDragEnd = {
-                    isRecording = false
-                    if (dragOffset < cancelThreshold) {
+                detectDragGestures(onDragStart = {},
+                    onDragEnd = { onDragEndAction() },
+                    onDragCancel = {
+                        isRecording = false
                         onCancelRecording()
-                    } else {
-                        onStopRecording()
-                    }
-                    dragOffset = 0f
-                    onDragOffsetChange(0f)
-                }, onDragCancel = {
-                    isRecording = false
-                    onCancelRecording()
-                    dragOffset = 0f
-                    onDragOffsetChange(0f)
-                }, onDrag = { change, dragAmount ->
-                    change.consume()
-                    val newOffset = (dragOffset + dragAmount.x).coerceIn(cancelThreshold - 20, 0f)
-                    dragOffset = newOffset
-                    onDragOffsetChange(newOffset)
-                })
+                        dragOffset = 0f
+                        onDragOffsetChange(0f)
+                    },
+                    onDrag = { change, dragAmount ->
+                        change.consume()
+                        val newOffset =
+                            (dragOffset + dragAmount.x).coerceIn(cancelThreshold - 20, 0f)
+                        dragOffset = newOffset
+                        onDragOffsetChange(newOffset)
+                    })
             }) {
         Icon(
             imageVector = if (isRecording) Icons.Default.Mic else Icons.Default.MicNone,
