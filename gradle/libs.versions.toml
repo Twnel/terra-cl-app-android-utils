@@ -23,7 +23,8 @@ navigationCompose = "2.8.5"
 lifeCycleViewModelCompose = "2.8.7"
 accompanistPermissions = "0.37.0"
 cameraX = "1.4.1"
-sonarqube = "6.0.1.5171"
+# sonarqube = "6.0.1.5171"
+sonarqube = "5.1.0.4882"
 composeMaterialIcons = "1.7.6"
 
 [libraries]
